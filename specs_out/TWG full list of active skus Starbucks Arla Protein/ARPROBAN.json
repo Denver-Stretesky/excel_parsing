@@ -1,0 +1,70 @@
+{
+  "id": "00000000-0000-0000-0000-000000000001",
+  "created_at": "2023-10-27T10:00:00Z",
+  "updated_at": "2023-10-27T10:00:00Z",
+  "timestamps": {
+    "cerve": {
+      "created_at": "2023-10-27T10:00:00Z",
+      "updated_at": "2023-10-27T10:00:00Z"
+    },
+    "supplier": {
+      "created_at": null,
+      "updated_at": null
+    }
+  },
+  "name": "Protein Banana",
+  "unit_of_measure": "carton",
+  "supplier_id": null,
+  "brand": "Arla",
+  "marketing_description": null,
+  "directions_for_use": null,
+  "alcohol_percentage": null,
+  "manufacturers": [
+    "Arla"
+  ],
+  "image_url": null,
+  "manufacturing_country_codes": [
+    "DK"
+  ],
+  "commodity_hs_code": "22029995",
+  "sub_specs": null,
+  "dietary_suitability": [
+    {
+      "name": "Halal",
+      "status": "true"
+    },
+    {
+      "name": "Vegetarian",
+      "status": "true"
+    },
+    {
+      "name": "Gluten Free",
+      "status": "true"
+    }
+  ],
+  "price_marked_packs": null,
+  "ingredients": null,
+  "content_declarations": null,
+  "references": {
+    "EAN_13": "5711953212963",
+    "EAN_8": null,
+    "UPC_A": null
+  },
+  "logistics": {
+    "storage": null,
+    "physical_properties": {
+      "inner_gross_weight": null,
+      "packaging": null,
+      "product": {
+        "weight": null,
+        "volume": {
+          "unit": "ml",
+          "value": 482
+        }
+      }
+    }
+  },
+  "nutrition": null,
+  "legacy_id": null,
+  "legacy_created_at": null
+}

@@ -1,0 +1,31 @@
+[project]
+name = "excel-parsing"
+version = "0.1.0"
+description = "Convert each row of a product CSV into a Cerve product-spec JSON via Claude."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+    "anthropic>=0.40.0",
+    "google-genai>=0.3.0",
+    "openpyxl>=3.1.0",
+    "xlrd==2.0.2",
+    "requests>=2.31.0",
+    "customtkinter>=5.2.0",
+    "keyring>=24.0",
+    "jsonschema>=4.0",
+]
+
+[dependency-groups]
+build = [
+    "pyinstaller>=6.0",
+]
+
+[project.scripts]
+csv-to-specs = "csv_to_specs:main"
+
+[tool.uv]
+package = false
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

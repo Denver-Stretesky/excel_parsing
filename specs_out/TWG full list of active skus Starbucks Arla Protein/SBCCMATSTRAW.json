@@ -1,0 +1,72 @@
+{
+  "id": null,
+  "created_at": null,
+  "updated_at": null,
+  "timestamps": {
+    "cerve": {
+      "created_at": null,
+      "updated_at": null
+    },
+    "supplier": {
+      "created_at": null,
+      "updated_at": null
+    }
+  },
+  "name": "Chilled Cup Matcha Strawberry",
+  "unit_of_measure": "bottle",
+  "supplier_id": null,
+  "brand": "Starbucks",
+  "marketing_description": null,
+  "directions_for_use": null,
+  "alcohol_percentage": null,
+  "manufacturers": null,
+  "image_url": null,
+  "manufacturing_country_codes": [
+    "DK"
+  ],
+  "commodity_hs_code": "22029915",
+  "sub_specs": null,
+  "dietary_suitability": [
+    {
+      "name": "Halal",
+      "status": "true"
+    },
+    {
+      "name": "Vegetarian",
+      "status": "true"
+    },
+    {
+      "name": "Gluten Free",
+      "status": "true"
+    }
+  ],
+  "price_marked_packs": null,
+  "ingredients": null,
+  "content_declarations": null,
+  "references": {
+    "EAN_13": "5711953221132",
+    "EAN_8": null,
+    "UPC_A": null
+  },
+  "logistics": {
+    "storage": null,
+    "physical_properties": {
+      "inner_gross_weight": null,
+      "packaging": {
+        "type": "bottle",
+        "dimensions": null,
+        "material": null
+      },
+      "product": {
+        "weight": null,
+        "volume": {
+          "unit": "ml",
+          "value": 220
+        }
+      }
+    }
+  },
+  "nutrition": null,
+  "legacy_id": null,
+  "legacy_created_at": null
+}

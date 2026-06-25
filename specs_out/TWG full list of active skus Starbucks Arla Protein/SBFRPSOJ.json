@@ -1,0 +1,55 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "created_at": "2023-10-27T10:00:00Z",
+  "updated_at": "2023-10-27T10:00:00Z",
+  "timestamps": {
+    "cerve": {
+      "created_at": "2023-10-27T10:00:00Z",
+      "updated_at": "2023-10-27T10:00:00Z"
+    },
+    "supplier": {
+      "created_at": null,
+      "updated_at": null
+    }
+  },
+  "name": "Frappuccino Sip of Joy",
+  "unit_of_measure": "bottle",
+  "supplier_id": null,
+  "brand": "Starbucks",
+  "marketing_description": null,
+  "directions_for_use": null,
+  "alcohol_percentage": null,
+  "manufacturers": null,
+  "image_url": null,
+  "manufacturing_country_codes": [
+    "DK"
+  ],
+  "commodity_hs_code": "22029995",
+  "sub_specs": null,
+  "dietary_suitability": [
+    {
+      "name": "Halal",
+      "status": "true"
+    },
+    {
+      "name": "Vegetarian",
+      "status": "true"
+    },
+    {
+      "name": "Gluten Free",
+      "status": "true"
+    }
+  ],
+  "price_marked_packs": null,
+  "ingredients": null,
+  "content_declarations": [],
+  "references": {
+    "EAN_13": "5711953209482",
+    "EAN_8": null,
+    "UPC_A": null
+  },
+  "logistics": null,
+  "nutrition": null,
+  "legacy_id": null,
+  "legacy_created_at": null
+}

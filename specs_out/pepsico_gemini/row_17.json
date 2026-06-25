@@ -1,0 +1,56 @@
+{
+  "id": "00000000-0000-0000-0000-000000000000",
+  "created_at": "1970-01-01T00:00:00Z",
+  "updated_at": "1970-01-01T00:00:00Z",
+  "timestamps": {
+    "cerve": {
+      "created_at": "1970-01-01T00:00:00Z",
+      "updated_at": "1970-01-01T00:00:00Z"
+    },
+    "supplier": {
+      "created_at": null,
+      "updated_at": null
+    }
+  },
+  "name": "Max Pchypprka Bag",
+  "unit_of_measure": "bag",
+  "supplier_id": null,
+  "brand": "Walkers",
+  "marketing_description": null,
+  "directions_for_use": null,
+  "alcohol_percentage": null,
+  "manufacturers": null,
+  "image_url": null,
+  "manufacturing_country_codes": null,
+  "commodity_hs_code": null,
+  "sub_specs": null,
+  "dietary_suitability": null,
+  "price_marked_packs": null,
+  "ingredients": null,
+  "content_declarations": null,
+  "references": null,
+  "logistics": {
+    "storage": null,
+    "physical_properties": {
+      "inner_gross_weight": null,
+      "packaging": {
+        "type": "bag",
+        "dimensions": null,
+        "material": null
+      },
+      "product": {
+        "weight": {
+          "inner_net": {
+            "unit": "g",
+            "value": 50
+          },
+          "drained": null
+        },
+        "volume": null
+      }
+    }
+  },
+  "nutrition": null,
+  "legacy_id": null,
+  "legacy_created_at": null
+}

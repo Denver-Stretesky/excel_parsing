@@ -1,0 +1,58 @@
+{
+  "id": null,
+  "created_at": null,
+  "updated_at": null,
+  "timestamps": {
+    "cerve": {
+      "created_at": null,
+      "updated_at": null
+    },
+    "supplier": {
+      "created_at": null,
+      "updated_at": null
+    }
+  },
+  "name": "Max Prawn Cocktail",
+  "unit_of_measure": "bag",
+  "supplier_id": null,
+  "brand": "Walkers",
+  "marketing_description": null,
+  "directions_for_use": null,
+  "alcohol_percentage": null,
+  "manufacturers": [
+    "Walkers"
+  ],
+  "image_url": null,
+  "manufacturing_country_codes": null,
+  "commodity_hs_code": null,
+  "sub_specs": null,
+  "dietary_suitability": null,
+  "price_marked_packs": null,
+  "ingredients": null,
+  "content_declarations": null,
+  "references": null,
+  "logistics": {
+    "storage": null,
+    "physical_properties": {
+      "inner_gross_weight": null,
+      "packaging": {
+        "type": "bag",
+        "dimensions": null,
+        "material": null
+      },
+      "product": {
+        "weight": {
+          "inner_net": {
+            "unit": "g",
+            "value": 27
+          },
+          "drained": null
+        },
+        "volume": null
+      }
+    }
+  },
+  "nutrition": null,
+  "legacy_id": null,
+  "legacy_created_at": null
+}

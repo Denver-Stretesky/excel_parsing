@@ -1,0 +1,63 @@
+{
+  "id": null,
+  "created_at": null,
+  "updated_at": null,
+  "timestamps": {
+    "cerve": {
+      "created_at": null,
+      "updated_at": null
+    },
+    "supplier": {
+      "created_at": null,
+      "updated_at": null
+    }
+  },
+  "name": "Jumbo Oats",
+  "unit_of_measure": "box",
+  "supplier_id": null,
+  "brand": "Mornflake",
+  "marketing_description": null,
+  "directions_for_use": null,
+  "alcohol_percentage": null,
+  "manufacturers": null,
+  "image_url": null,
+  "manufacturing_country_codes": null,
+  "commodity_hs_code": null,
+  "sub_specs": null,
+  "dietary_suitability": null,
+  "price_marked_packs": null,
+  "ingredients": null,
+  "content_declarations": [],
+  "references": {
+    "EAN_13": "5010026505064",
+    "EAN_8": null,
+    "UPC_A": null
+  },
+  "logistics": {
+    "storage": null,
+    "physical_properties": {
+      "inner_gross_weight": {
+        "unit": "kg",
+        "value": 0.5
+      },
+      "packaging": {
+        "type": "box",
+        "dimensions": null,
+        "material": null
+      },
+      "product": {
+        "weight": {
+          "inner_net": {
+            "unit": "g",
+            "value": 500
+          },
+          "drained": null
+        },
+        "volume": null
+      }
+    }
+  },
+  "nutrition": null,
+  "legacy_id": null,
+  "legacy_created_at": null
+}

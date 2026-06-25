@@ -1,0 +1,2212 @@
+{
+  "description": "Product information",
+  "type": "object",
+  "required": [
+    "id",
+    "created_at",
+    "updated_at",
+    "timestamps",
+    "name",
+    "unit_of_measure",
+    "supplier_id",
+    "brand",
+    "marketing_description",
+    "directions_for_use",
+    "alcohol_percentage",
+    "manufacturers",
+    "image_url",
+    "manufacturing_country_codes",
+    "commodity_hs_code",
+    "sub_specs",
+    "dietary_suitability",
+    "price_marked_packs",
+    "ingredients",
+    "content_declarations",
+    "references",
+    "logistics",
+    "nutrition"
+  ],
+  "properties": {
+    "id": {
+      "type": "string",
+      "format": "uuid",
+      "description": "Internal Cerve spec identifier"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "x-ogen-time-format": "2006-01-02T15:04:05.999999999Z07:00",
+      "description": "Creation time"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "x-ogen-time-format": "2006-01-02T15:04:05.999999999Z07:00",
+      "description": "Last update time"
+    },
+    "timestamps": {
+      "type": "object",
+      "description": "Timestamps related to a spec's lifecycle, separated by source system. Cerve timestamps are managed automatically by Cerve's system. Supplier timestamps reflect when the spec data was originally created or last updated by the supplier (i.e. the source of the product information).\n",
+      "required": [
+        "cerve",
+        "supplier"
+      ],
+      "properties": {
+        "cerve": {
+          "type": "object",
+          "description": "Timestamps managed by Cerve's system.",
+          "required": [
+            "created_at",
+            "updated_at"
+          ],
+          "properties": {
+            "created_at": {
+              "type": "string",
+              "format": "date-time",
+              "x-ogen-time-format": "2006-01-02T15:04:05.999999999Z07:00",
+              "description": "Creation time"
+            },
+            "updated_at": {
+              "type": "string",
+              "format": "date-time",
+              "x-ogen-time-format": "2006-01-02T15:04:05.999999999Z07:00",
+              "description": "Last update time"
+            }
+          }
+        },
+        "supplier": {
+          "type": "object",
+          "description": "Timestamps reflecting when the supplier originally authored or last modified the product information. Useful for determining data freshness and sending suppliers reminders when their data is outdated.\n",
+          "required": [
+            "created_at",
+            "updated_at"
+          ],
+          "properties": {
+            "created_at": {
+              "description": "Timestamp when the spec data was originally created by the supplier. Null if not provided by the supplier.\n",
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              ]
+            },
+            "updated_at": {
+              "description": "Timestamp when the spec data was last updated by the supplier. Null if not provided by the supplier.\n",
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "string",
+                  "format": "date-time"
+                }
+              ]
+            }
+          }
+        }
+      }
+    },
+    "name": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Product name and description",
+      "example": "Organic Apple Juice"
+    },
+    "unit_of_measure": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Unit of measure",
+      "example": "Case"
+    },
+    "supplier_id": {
+      "description": "The supplier ID of the supplier of the product",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "uuid",
+          "description": "Unique identifier of the supplier"
+        }
+      ]
+    },
+    "brand": {
+      "description": "Product brand name",
+      "example": "Nature's Best",
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "marketing_description": {
+      "description": "Marketing description of the product",
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "directions_for_use": {
+      "description": "Product directions for use",
+      "oneOf": [
+        {
+          "type": "string",
+          "minLength": 1
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "alcohol_percentage": {
+      "description": "Alcohol by volume (ABV) percentage",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 1,
+          "description": "A percentage value between 0.0 and 1.0, where 0.0 represents 0% and 1.0 represents 100%.\n",
+          "example": 0.25
+        }
+      ]
+    },
+    "manufacturers": {
+      "description": "A list of the manufacturers of the product",
+      "example": [
+        "Fake Food Factory Ltd",
+        "Fake Food Processing"
+      ],
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "string"
+          }
+        }
+      ]
+    },
+    "image_url": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "uri"
+        }
+      ],
+      "description": "URL to product's primary image",
+      "example": "https://images.cerve.com/products/prod_12345.jpg"
+    },
+    "manufacturing_country_codes": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 2,
+            "maxLength": 2,
+            "description": "Country code as defined in ISO 3166-1 alpha-2",
+            "example": "GB"
+          }
+        }
+      ]
+    },
+    "commodity_hs_code": {
+      "oneOf": [
+        {
+          "description": "The HS (Harmonized System) code for the commodity. Must be 6 to 10 digits.\n6-digit codes are international standard; longer codes (8–10 digits) may include country-specific extensions.\n",
+          "type": "string",
+          "minLength": 6,
+          "maxLength": 10,
+          "pattern": "^[\\d\\.]{6,10}$"
+        },
+        {
+          "type": "null"
+        }
+      ]
+    },
+    "sub_specs": {
+      "description": "A list of specs that aggregate to define this spec.",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "description": "Specification of a sub-spec.",
+            "required": [
+              "quantity",
+              "spec_id"
+            ],
+            "properties": {
+              "spec_id": {
+                "type": "string",
+                "format": "uuid",
+                "description": "Internal Cerve spec identifier"
+              },
+              "quantity": {
+                "type": "number",
+                "description": "The quantity of the spec that defines the sub-spec.",
+                "minimum": 0,
+                "example": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "dietary_suitability": {
+      "description": "A list of dietary suitability claims for the product (e.g. halal, kosher, vegetarian, etc.)",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "description": "Dietary suitability claims for the product",
+            "x-atomic": true,
+            "required": [
+              "name",
+              "status"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Name of the dietary suitability claim (e.g. 'Halal', 'Kosher', 'Vegan')",
+                "example": "Halal"
+              },
+              "status": {
+                "type": "string",
+                "enum": [
+                  "true",
+                  "false",
+                  "certified"
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "price_marked_packs": {
+      "description": "A list of the price marked pack variants of the product.",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "description": "Specification of the price marked pack variant.",
+            "x-atomic": true,
+            "required": [
+              "price",
+              "quantity"
+            ],
+            "properties": {
+              "price": {
+                "description": "Currency amount",
+                "type": "object",
+                "x-atomic": true,
+                "required": [
+                  "amount",
+                  "currency_code"
+                ],
+                "properties": {
+                  "amount": {
+                    "type": "number",
+                    "description": "Numeric amount",
+                    "example": 3.99
+                  },
+                  "currency_code": {
+                    "type": "string",
+                    "minLength": 3,
+                    "maxLength": 3,
+                    "description": "Currency code as specified in ISO 4217",
+                    "example": "GBP",
+                    "x-ogen-validate": {
+                      "currency-code": {}
+                    }
+                  }
+                }
+              },
+              "quantity": {
+                "type": "integer",
+                "description": "The quantity of product in the price marked pack.",
+                "example": 1
+              }
+            }
+          }
+        }
+      ]
+    },
+    "ingredients": {
+      "description": "List of ingredients in the product",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "description": "Ingredient information for the product",
+            "x-atomic": true,
+            "required": [
+              "name",
+              "percentage",
+              "origin_country_codes"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "description": "Name of the ingredient",
+                "example": "Water"
+              },
+              "percentage": {
+                "description": "Percentage content of the ingredient in the product.",
+                "oneOf": [
+                  {
+                    "type": "number",
+                    "minimum": 0,
+                    "maximum": 1,
+                    "description": "A percentage value between 0.0 and 1.0, where 0.0 represents 0% and 1.0 represents 100%.\n",
+                    "example": 0.25
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "origin_country_codes": {
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "array",
+                    "items": {
+                      "type": "string",
+                      "minLength": 2,
+                      "maxLength": 2,
+                      "description": "Country code as defined in ISO 3166-1 alpha-2",
+                      "example": "GB"
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "content_declarations": {
+      "type": "array",
+      "description": "Content declarations for the product (e.g. allergens, additives, etc.)",
+      "items": {
+        "type": "object",
+        "description": "Content declarations for the product",
+        "x-atomic": true,
+        "required": [
+          "name",
+          "type",
+          "status",
+          "quantity"
+        ],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "The name of the content declaration.",
+            "example": "gluten"
+          },
+          "type": {
+            "type": "string",
+            "description": "The type of content declaration.",
+            "enum": [
+              "allergen",
+              "additive"
+            ]
+          },
+          "status": {
+            "type": "string",
+            "description": "The status of the content in the product.",
+            "enum": [
+              "yes",
+              "no",
+              "may-contain",
+              "trace",
+              "unknown"
+            ],
+            "example": "yes"
+          },
+          "quantity": {
+            "oneOf": [
+              {
+                "type": "null"
+              },
+              {
+                "type": "object",
+                "description": "A nutritional quantity with a unit of measurement",
+                "x-atomic": true,
+                "required": [
+                  "unit",
+                  "value",
+                  "comparison"
+                ],
+                "properties": {
+                  "unit": {
+                    "type": "string",
+                    "description": "Unit of measurement for the weight",
+                    "enum": [
+                      "g",
+                      "mg",
+                      "kg",
+                      "lb",
+                      "oz",
+                      "ml",
+                      "l",
+                      "fl_oz",
+                      "cal",
+                      "kcal",
+                      "kJ",
+                      "ppm",
+                      "m",
+                      "cm",
+                      "mm",
+                      "nm",
+                      "mcg",
+                      "us_fl_oz",
+                      "in"
+                    ],
+                    "example": "g"
+                  },
+                  "value": {
+                    "type": "number",
+                    "description": "The reported nutrient value",
+                    "minimum": 0,
+                    "example": 1.5
+                  },
+                  "comparison": {
+                    "type": "string",
+                    "description": "Indicates how the reported nutrient value should be interpreted relative to the specified number.\nFor example, \"lessThan\" with a value of 1.5 means the nutrient is present in quantities under 1.5 grams.\n",
+                    "enum": [
+                      "lessThan",
+                      "greaterThan",
+                      "equal"
+                    ],
+                    "default": "equal"
+                  }
+                }
+              }
+            ]
+          }
+        }
+      }
+    },
+    "references": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "description": "Different ways this product can be referred to",
+          "required": [
+            "EAN_13",
+            "EAN_8",
+            "UPC_A"
+          ],
+          "properties": {
+            "EAN_13": {
+              "description": "EAN-13 barcode",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "EAN_8": {
+              "description": "Unique product identifier in the specified format",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            },
+            "UPC_A": {
+              "description": "Unique product identifier in the specified format",
+              "oneOf": [
+                {
+                  "type": "string",
+                  "minLength": 1
+                },
+                {
+                  "type": "null"
+                }
+              ]
+            }
+          },
+          "example": {
+            "EAN_13": "5901234123457",
+            "EAN_8": "96385074",
+            "UPC_A": "036000291452"
+          }
+        }
+      ]
+    },
+    "logistics": {
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "object",
+          "description": "Shipping and handling specifications for the product",
+          "required": [
+            "storage",
+            "physical_properties"
+          ],
+          "properties": {
+            "storage": {
+              "description": "A list of storage conditions for the product",
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "array",
+                  "items": {
+                    "type": "object",
+                    "description": "Storage conditions for the product",
+                    "required": [
+                      "shelf_life_days",
+                      "hours_after_opening",
+                      "conditions",
+                      "temperature_min_celsius",
+                      "temperature_max_celsius"
+                    ],
+                    "properties": {
+                      "shelf_life_days": {
+                        "oneOf": [
+                          {
+                            "type": "null"
+                          },
+                          {
+                            "type": "integer"
+                          }
+                        ],
+                        "description": "Product shelf life in days",
+                        "example": 180
+                      },
+                      "hours_after_opening": {
+                        "oneOf": [
+                          {
+                            "type": "null"
+                          },
+                          {
+                            "type": "integer"
+                          }
+                        ],
+                        "description": "Usable time after opening in hours",
+                        "example": 48
+                      },
+                      "conditions": {
+                        "oneOf": [
+                          {
+                            "type": "null"
+                          },
+                          {
+                            "type": "string"
+                          }
+                        ],
+                        "minLength": 1,
+                        "description": "Required storage environment",
+                        "example": "Keep refrigerated after opening",
+                        "type": "string"
+                      },
+                      "temperature_min_celsius": {
+                        "oneOf": [
+                          {
+                            "type": "null"
+                          },
+                          {
+                            "type": "integer"
+                          }
+                        ],
+                        "description": "Minimum storage temperature in Celsius",
+                        "example": 2
+                      },
+                      "temperature_max_celsius": {
+                        "oneOf": [
+                          {
+                            "type": "null"
+                          },
+                          {
+                            "type": "integer"
+                          }
+                        ],
+                        "description": "Maximum storage temperature in Celsius",
+                        "example": 8
+                      }
+                    }
+                  }
+                }
+              ]
+            },
+            "physical_properties": {
+              "oneOf": [
+                {
+                  "type": "null"
+                },
+                {
+                  "type": "object",
+                  "description": "Physical properties of the product for shipping and handling",
+                  "required": [
+                    "inner_gross_weight",
+                    "packaging",
+                    "product"
+                  ],
+                  "properties": {
+                    "inner_gross_weight": {
+                      "description": "The inner gross weight of the product with packaging",
+                      "oneOf": [
+                        {
+                          "type": "null"
+                        },
+                        {
+                          "type": "object",
+                          "description": "A weight quantity with a unit of measurement",
+                          "x-atomic": true,
+                          "required": [
+                            "unit",
+                            "value"
+                          ],
+                          "properties": {
+                            "unit": {
+                              "type": "string",
+                              "description": "Unit of measurement for the weight",
+                              "enum": [
+                                "g",
+                                "mg",
+                                "kg",
+                                "lb",
+                                "oz",
+                                "mcg"
+                              ],
+                              "example": "g"
+                            },
+                            "value": {
+                              "type": "number",
+                              "description": "Value",
+                              "minimum": 0,
+                              "example": 1.5
+                            }
+                          }
+                        }
+                      ]
+                    },
+                    "packaging": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "description": "Packaging details for the product",
+                          "required": [
+                            "type",
+                            "dimensions",
+                            "material"
+                          ],
+                          "properties": {
+                            "type": {
+                              "type": "string",
+                              "minLength": 1,
+                              "description": "Type of packaging (e.g. 'bottle', 'box', 'bag')",
+                              "example": "bottle"
+                            },
+                            "dimensions": {
+                              "oneOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "object",
+                                  "description": "Dimensions of the product packaging",
+                                  "x-atomic": true,
+                                  "required": [
+                                    "height",
+                                    "width",
+                                    "length"
+                                  ],
+                                  "properties": {
+                                    "height": {
+                                      "type": "object",
+                                      "description": "A distance quantity with a unit of measurement",
+                                      "x-atomic": true,
+                                      "required": [
+                                        "unit",
+                                        "value"
+                                      ],
+                                      "properties": {
+                                        "unit": {
+                                          "type": "string",
+                                          "description": "Unit of measurement for the distance",
+                                          "enum": [
+                                            "m",
+                                            "cm",
+                                            "mm",
+                                            "nm",
+                                            "in"
+                                          ],
+                                          "example": "cm"
+                                        },
+                                        "value": {
+                                          "type": "number",
+                                          "description": "Value",
+                                          "minimum": 0,
+                                          "example": 1.5
+                                        }
+                                      }
+                                    },
+                                    "width": {
+                                      "type": "object",
+                                      "description": "A distance quantity with a unit of measurement",
+                                      "x-atomic": true,
+                                      "required": [
+                                        "unit",
+                                        "value"
+                                      ],
+                                      "properties": {
+                                        "unit": {
+                                          "type": "string",
+                                          "description": "Unit of measurement for the distance",
+                                          "enum": [
+                                            "m",
+                                            "cm",
+                                            "mm",
+                                            "nm",
+                                            "in"
+                                          ],
+                                          "example": "cm"
+                                        },
+                                        "value": {
+                                          "type": "number",
+                                          "description": "Value",
+                                          "minimum": 0,
+                                          "example": 1.5
+                                        }
+                                      }
+                                    },
+                                    "length": {
+                                      "type": "object",
+                                      "description": "A distance quantity with a unit of measurement",
+                                      "x-atomic": true,
+                                      "required": [
+                                        "unit",
+                                        "value"
+                                      ],
+                                      "properties": {
+                                        "unit": {
+                                          "type": "string",
+                                          "description": "Unit of measurement for the distance",
+                                          "enum": [
+                                            "m",
+                                            "cm",
+                                            "mm",
+                                            "nm",
+                                            "in"
+                                          ],
+                                          "example": "cm"
+                                        },
+                                        "value": {
+                                          "type": "number",
+                                          "description": "Value",
+                                          "minimum": 0,
+                                          "example": 1.5
+                                        }
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "material": {
+                              "description": "Materials used in the packaging",
+                              "oneOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "array",
+                                  "items": {
+                                    "type": "object",
+                                    "description": "Material used in the packaging",
+                                    "required": [
+                                      "name",
+                                      "weight"
+                                    ],
+                                    "properties": {
+                                      "name": {
+                                        "type": "string",
+                                        "minLength": 1,
+                                        "description": "Name of the packaging material (e.g. 'plastic', 'glass', 'paper')",
+                                        "example": "plastic"
+                                      },
+                                      "weight": {
+                                        "oneOf": [
+                                          {
+                                            "type": "object",
+                                            "description": "A weight quantity with a unit of measurement",
+                                            "x-atomic": true,
+                                            "required": [
+                                              "unit",
+                                              "value"
+                                            ],
+                                            "properties": {
+                                              "unit": {
+                                                "type": "string",
+                                                "description": "Unit of measurement for the weight",
+                                                "enum": [
+                                                  "g",
+                                                  "mg",
+                                                  "kg",
+                                                  "lb",
+                                                  "oz",
+                                                  "mcg"
+                                                ],
+                                                "example": "g"
+                                              },
+                                              "value": {
+                                                "type": "number",
+                                                "description": "Value",
+                                                "minimum": 0,
+                                                "example": 1.5
+                                              }
+                                            }
+                                          },
+                                          {
+                                            "type": "null"
+                                          }
+                                        ],
+                                        "description": "Weight of the packaging material"
+                                      }
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    },
+                    "product": {
+                      "oneOf": [
+                        {
+                          "type": "object",
+                          "description": "Physical properties about the product (excluding packaging)",
+                          "required": [
+                            "weight",
+                            "volume"
+                          ],
+                          "properties": {
+                            "weight": {
+                              "oneOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "object",
+                                  "description": "Weight of the product excluding packaging",
+                                  "required": [
+                                    "inner_net",
+                                    "drained"
+                                  ],
+                                  "properties": {
+                                    "inner_net": {
+                                      "description": "Net weight of the product excluding packaging",
+                                      "oneOf": [
+                                        {
+                                          "type": "null"
+                                        },
+                                        {
+                                          "type": "object",
+                                          "description": "A weight quantity with a unit of measurement",
+                                          "x-atomic": true,
+                                          "required": [
+                                            "unit",
+                                            "value"
+                                          ],
+                                          "properties": {
+                                            "unit": {
+                                              "type": "string",
+                                              "description": "Unit of measurement for the weight",
+                                              "enum": [
+                                                "g",
+                                                "mg",
+                                                "kg",
+                                                "lb",
+                                                "oz",
+                                                "mcg"
+                                              ],
+                                              "example": "g"
+                                            },
+                                            "value": {
+                                              "type": "number",
+                                              "description": "Value",
+                                              "minimum": 0,
+                                              "example": 1.5
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    },
+                                    "drained": {
+                                      "description": "Drained weight of the product, if applicable (e.g. for canned products)",
+                                      "oneOf": [
+                                        {
+                                          "type": "null"
+                                        },
+                                        {
+                                          "type": "object",
+                                          "description": "A weight quantity with a unit of measurement",
+                                          "x-atomic": true,
+                                          "required": [
+                                            "unit",
+                                            "value"
+                                          ],
+                                          "properties": {
+                                            "unit": {
+                                              "type": "string",
+                                              "description": "Unit of measurement for the weight",
+                                              "enum": [
+                                                "g",
+                                                "mg",
+                                                "kg",
+                                                "lb",
+                                                "oz",
+                                                "mcg"
+                                              ],
+                                              "example": "g"
+                                            },
+                                            "value": {
+                                              "type": "number",
+                                              "description": "Value",
+                                              "minimum": 0,
+                                              "example": 1.5
+                                            }
+                                          }
+                                        }
+                                      ]
+                                    }
+                                  }
+                                }
+                              ]
+                            },
+                            "volume": {
+                              "oneOf": [
+                                {
+                                  "type": "null"
+                                },
+                                {
+                                  "type": "object",
+                                  "description": "A volume quantity with a unit of measurement",
+                                  "x-atomic": true,
+                                  "required": [
+                                    "unit",
+                                    "value"
+                                  ],
+                                  "properties": {
+                                    "unit": {
+                                      "type": "string",
+                                      "description": "Unit of measurement for the volume",
+                                      "enum": [
+                                        "ml",
+                                        "l",
+                                        "fl_oz",
+                                        "us_fl_oz"
+                                      ],
+                                      "example": "l"
+                                    },
+                                    "value": {
+                                      "type": "number",
+                                      "description": "Value",
+                                      "minimum": 0,
+                                      "example": 1.5
+                                    }
+                                  }
+                                }
+                              ]
+                            }
+                          }
+                        },
+                        {
+                          "type": "null"
+                        }
+                      ]
+                    }
+                  }
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    "nutrition": {
+      "description": "Nutritional information for the product",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "description": "Nutritional information for the product",
+            "required": [
+              "serving",
+              "energy",
+              "fat",
+              "carbohydrates",
+              "protein",
+              "salt",
+              "fibre",
+              "vitamins",
+              "minerals"
+            ],
+            "properties": {
+              "serving": {
+                "type": "object",
+                "description": "A nutritional quantity with a unit of measurement",
+                "x-atomic": true,
+                "required": [
+                  "unit",
+                  "value",
+                  "comparison"
+                ],
+                "properties": {
+                  "unit": {
+                    "type": "string",
+                    "description": "Unit of measurement for the weight",
+                    "enum": [
+                      "g",
+                      "mg",
+                      "kg",
+                      "lb",
+                      "oz",
+                      "ml",
+                      "l",
+                      "fl_oz",
+                      "cal",
+                      "kcal",
+                      "kJ",
+                      "ppm",
+                      "m",
+                      "cm",
+                      "mm",
+                      "nm",
+                      "mcg",
+                      "us_fl_oz",
+                      "in"
+                    ],
+                    "example": "g"
+                  },
+                  "value": {
+                    "type": "number",
+                    "description": "The reported nutrient value",
+                    "minimum": 0,
+                    "example": 1.5
+                  },
+                  "comparison": {
+                    "type": "string",
+                    "description": "Indicates how the reported nutrient value should be interpreted relative to the specified number.\nFor example, \"lessThan\" with a value of 1.5 means the nutrient is present in quantities under 1.5 grams.\n",
+                    "enum": [
+                      "lessThan",
+                      "greaterThan",
+                      "equal"
+                    ],
+                    "default": "equal"
+                  }
+                }
+              },
+              "energy": {
+                "type": "object",
+                "description": "Energy content in the product",
+                "required": [
+                  "calories",
+                  "kilojoules"
+                ],
+                "properties": {
+                  "calories": {
+                    "type": "object",
+                    "description": "A nutritional quantity with a unit of measurement",
+                    "x-atomic": true,
+                    "required": [
+                      "unit",
+                      "value",
+                      "comparison"
+                    ],
+                    "properties": {
+                      "unit": {
+                        "type": "string",
+                        "description": "Unit of measurement for the weight",
+                        "enum": [
+                          "g",
+                          "mg",
+                          "kg",
+                          "lb",
+                          "oz",
+                          "ml",
+                          "l",
+                          "fl_oz",
+                          "cal",
+                          "kcal",
+                          "kJ",
+                          "ppm",
+                          "m",
+                          "cm",
+                          "mm",
+                          "nm",
+                          "mcg",
+                          "us_fl_oz",
+                          "in"
+                        ],
+                        "example": "g"
+                      },
+                      "value": {
+                        "type": "number",
+                        "description": "The reported nutrient value",
+                        "minimum": 0,
+                        "example": 1.5
+                      },
+                      "comparison": {
+                        "type": "string",
+                        "description": "Indicates how the reported nutrient value should be interpreted relative to the specified number.\nFor example, \"lessThan\" with a value of 1.5 means the nutrient is present in quantities under 1.5 grams.\n",
+                        "enum": [
+                          "lessThan",
+                          "greaterThan",
+                          "equal"
+                        ],
+                        "default": "equal"
+                      }
+                    }
+                  },
+                  "kilojoules": {
+                    "type": "object",
+                    "description": "A nutritional quantity with a unit of measurement",
+                    "x-atomic": true,
+                    "required": [
+                      "unit",
+                      "value",
+                      "comparison"
+                    ],
+                    "properties": {
+                      "unit": {
+                        "type": "string",
+                        "description": "Unit of measurement for the weight",
+                        "enum": [
+                          "g",
+                          "mg",
+                          "kg",
+                          "lb",
+                          "oz",
+                          "ml",
+                          "l",
+                          "fl_oz",
+                          "cal",
+                          "kcal",
+                          "kJ",
+                          "ppm",
+                          "m",
+                          "cm",
+                          "mm",
+                          "nm",
+                          "mcg",
+                          "us_fl_oz",
+                          "in"
+                        ],
+                        "example": "g"
+                      },
+                      "value": {
+                        "type": "number",
+                        "description": "The reported nutrient value",
+                        "minimum": 0,
+                        "example": 1.5
+                      },
+                      "comparison": {
+                        "type": "string",
+                        "description": "Indicates how the reported nutrient value should be interpreted relative to the specified number.\nFor example, \"lessThan\" with a value of 1.5 means the nutrient is present in quantities under 1.5 grams.\n",
+                        "enum": [
+                          "lessThan",
+                          "greaterThan",
+                          "equal"
+                        ],
+                        "default": "equal"
+                      }
+                    }
+                  }
+                }
+              },
+              "fat": {
+                "type": "object",
+                "description": "Fat content in the product",
+                "required": [
+                  "total",
+                  "saturated",
+                  "unsaturated",
+                  "monounsaturated",
+                  "polyunsaturated"
+                ],
+                "properties": {
+                  "total": {
+                    "type": "object",
+                    "description": "A nutritional quantity with a unit of measurement",
+                    "x-atomic": true,
+                    "required": [
+                      "unit",
+                      "value",
+                      "comparison"
+                    ],
+                    "properties": {
+                      "unit": {
+                        "type": "string",
+                        "description": "Unit of measurement for the weight",
+                        "enum": [
+                          "g",
+                          "mg",
+                          "kg",
+                          "lb",
+                          "oz",
+                          "ml",
+                          "l",
+                          "fl_oz",
+                          "cal",
+                          "kcal",
+                          "kJ",
+                          "ppm",
+                          "m",
+                          "cm",
+                          "mm",
+                          "nm",
+                          "mcg",
+                          "us_fl_oz",
+                          "in"
+                        ],
+                        "example": "g"
+                      },
+                      "value": {
+                        "type": "number",
+                        "description": "The reported nutrient value",
+                        "minimum": 0,
+                        "example": 1.5
+                      },
+                      "comparison": {
+                        "type": "string",
+                        "description": "Indicates how the reported nutrient value should be interpreted relative to the specified number.\nFor example, \"lessThan\" with a value of 1.5 means the nutrient is present in quantities under 1.5 grams.\n",
+                        "enum": [
+                          "lessThan",
+                          "greaterThan",
+                          "equal"
+                        ],
+                        "default": "equal"
+                      }
+                    }
+                  },
+                  "saturated": {
+                    "type": "object",
+                    "description": "A nutritional quantity with a unit of measurement",
+                    "x-atomic": true,
+                    "required": [
+                      "unit",
+                      "value",
+                      "comparison"
+                    ],
+                    "properties": {
+                      "unit": {
+                        "type": "string",
+                        "description": "Unit of measurement for the weight",
+                        "enum": [
+                          "g",
+                          "mg",
+                          "kg",
+                          "lb",
+                          "oz",
+                          "ml",
+                          "l",
+                          "fl_oz",
+                          "cal",
+                          "kcal",
+                          "kJ",
+                          "ppm",
+                          "m",
+                          "cm",
+                          "mm",
+                          "nm",
+                          "mcg",
+                          "us_fl_oz",
+                          "in"
+                        ],
+                        "example": "g"
+                      },
+                      "value": {
+                        "type": "number",
+                        "description": "The reported nutrient value",
+                        "minimum": 0,
+                        "example": 1.5
+                      },
+                      "comparison": {
+                        "type": "string",
+                        "description": "Indicates how the reported nutrient value should be interpreted relative to the specified number.\nFor example, \"lessThan\" with a value of 1.5 means the nutrient is present in quantities under 1.5 grams.\n",
+                        "enum": [
+                          "lessThan",
+                          "greaterThan",
+                          "equal"
+                        ],
+                        "default": "equal"
+                      }
+                    }
+                  },
+                  "unsaturated": {
+                    "description": "Unsaturated fat content",
+                    "oneOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "object",
+                        "description": "A nutritional quantity with a unit of measurement",
+                        "x-atomic": true,
+                        "required": [
+                          "unit",
+                          "value",
+                          "comparison"
+                        ],
+                        "properties": {
+                          "unit": {
+                            "type": "string",
+                            "description": "Unit of measurement for the weight",
+                            "enum": [
+                              "g",
+                              "mg",
+                              "kg",
+                              "lb",
+                              "oz",
+                              "ml",
+                              "l",
+                              "fl_oz",
+                              "cal",
+                              "kcal",
+                              "kJ",
+                              "ppm",
+                              "m",
+                              "cm",
+                              "mm",
+                              "nm",
+                              "mcg",
+                              "us_fl_oz",
+                              "in"
+                            ],
+                            "example": "g"
+                          },
+                          "value": {
+                            "type": "number",
+                            "description": "The reported nutrient value",
+                            "minimum": 0,
+                            "example": 1.5
+                          },
+                          "comparison": {
+                            "type": "string",
+                            "description": "Indicates how the reported nutrient value should be interpreted relative to the specified number.\nFor example, \"lessThan\" with a value of 1.5 means the nutrient is present in quantities under 1.5 grams.\n",
+                            "enum": [
+                              "lessThan",
+                              "greaterThan",
+                              "equal"
+                            ],
+                            "default": "equal"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "monounsaturated": {
+                    "description": "Monounsaturated fat content",
+                    "oneOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "object",
+                        "description": "A nutritional quantity with a unit of measurement",
+                        "x-atomic": true,
+                        "required": [
+                          "unit",
+                          "value",
+                          "comparison"
+                        ],
+                        "properties": {
+                          "unit": {
+                            "type": "string",
+                            "description": "Unit of measurement for the weight",
+                            "enum": [
+                              "g",
+                              "mg",
+                              "kg",
+                              "lb",
+                              "oz",
+                              "ml",
+                              "l",
+                              "fl_oz",
+                              "cal",
+                              "kcal",
+                              "kJ",
+                              "ppm",
+                              "m",
+                              "cm",
+                              "mm",
+                              "nm",
+                              "mcg",
+                              "us_fl_oz",
+                              "in"
+                            ],
+                            "example": "g"
+                          },
+                          "value": {
+                            "type": "number",
+                            "description": "The reported nutrient value",
+                            "minimum": 0,
+                            "example": 1.5
+                          },
+                          "comparison": {
+                            "type": "string",
+                            "description": "Indicates how the reported nutrient value should be interpreted relative to the specified number.\nFor example, \"lessThan\" with a value of 1.5 means the nutrient is present in quantities under 1.5 grams.\n",
+                            "enum": [
+                              "lessThan",
+                              "greaterThan",
+                              "equal"
+                            ],
+                            "default": "equal"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "polyunsaturated": {
+                    "description": "Polyunsaturated fat content",
+                    "oneOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "object",
+                        "description": "A nutritional quantity with a unit of measurement",
+                        "x-atomic": true,
+                        "required": [
+                          "unit",
+                          "value",
+                          "comparison"
+                        ],
+                        "properties": {
+                          "unit": {
+                            "type": "string",
+                            "description": "Unit of measurement for the weight",
+                            "enum": [
+                              "g",
+                              "mg",
+                              "kg",
+                              "lb",
+                              "oz",
+                              "ml",
+                              "l",
+                              "fl_oz",
+                              "cal",
+                              "kcal",
+                              "kJ",
+                              "ppm",
+                              "m",
+                              "cm",
+                              "mm",
+                              "nm",
+                              "mcg",
+                              "us_fl_oz",
+                              "in"
+                            ],
+                            "example": "g"
+                          },
+                          "value": {
+                            "type": "number",
+                            "description": "The reported nutrient value",
+                            "minimum": 0,
+                            "example": 1.5
+                          },
+                          "comparison": {
+                            "type": "string",
+                            "description": "Indicates how the reported nutrient value should be interpreted relative to the specified number.\nFor example, \"lessThan\" with a value of 1.5 means the nutrient is present in quantities under 1.5 grams.\n",
+                            "enum": [
+                              "lessThan",
+                              "greaterThan",
+                              "equal"
+                            ],
+                            "default": "equal"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "carbohydrates": {
+                "type": "object",
+                "description": "Carbohydrate content in the product",
+                "required": [
+                  "total",
+                  "sugars",
+                  "starch",
+                  "polyols"
+                ],
+                "properties": {
+                  "total": {
+                    "type": "object",
+                    "description": "A nutritional quantity with a unit of measurement",
+                    "x-atomic": true,
+                    "required": [
+                      "unit",
+                      "value",
+                      "comparison"
+                    ],
+                    "properties": {
+                      "unit": {
+                        "type": "string",
+                        "description": "Unit of measurement for the weight",
+                        "enum": [
+                          "g",
+                          "mg",
+                          "kg",
+                          "lb",
+                          "oz",
+                          "ml",
+                          "l",
+                          "fl_oz",
+                          "cal",
+                          "kcal",
+                          "kJ",
+                          "ppm",
+                          "m",
+                          "cm",
+                          "mm",
+                          "nm",
+                          "mcg",
+                          "us_fl_oz",
+                          "in"
+                        ],
+                        "example": "g"
+                      },
+                      "value": {
+                        "type": "number",
+                        "description": "The reported nutrient value",
+                        "minimum": 0,
+                        "example": 1.5
+                      },
+                      "comparison": {
+                        "type": "string",
+                        "description": "Indicates how the reported nutrient value should be interpreted relative to the specified number.\nFor example, \"lessThan\" with a value of 1.5 means the nutrient is present in quantities under 1.5 grams.\n",
+                        "enum": [
+                          "lessThan",
+                          "greaterThan",
+                          "equal"
+                        ],
+                        "default": "equal"
+                      }
+                    }
+                  },
+                  "sugars": {
+                    "type": "object",
+                    "description": "A nutritional quantity with a unit of measurement",
+                    "x-atomic": true,
+                    "required": [
+                      "unit",
+                      "value",
+                      "comparison"
+                    ],
+                    "properties": {
+                      "unit": {
+                        "type": "string",
+                        "description": "Unit of measurement for the weight",
+                        "enum": [
+                          "g",
+                          "mg",
+                          "kg",
+                          "lb",
+                          "oz",
+                          "ml",
+                          "l",
+                          "fl_oz",
+                          "cal",
+                          "kcal",
+                          "kJ",
+                          "ppm",
+                          "m",
+                          "cm",
+                          "mm",
+                          "nm",
+                          "mcg",
+                          "us_fl_oz",
+                          "in"
+                        ],
+                        "example": "g"
+                      },
+                      "value": {
+                        "type": "number",
+                        "description": "The reported nutrient value",
+                        "minimum": 0,
+                        "example": 1.5
+                      },
+                      "comparison": {
+                        "type": "string",
+                        "description": "Indicates how the reported nutrient value should be interpreted relative to the specified number.\nFor example, \"lessThan\" with a value of 1.5 means the nutrient is present in quantities under 1.5 grams.\n",
+                        "enum": [
+                          "lessThan",
+                          "greaterThan",
+                          "equal"
+                        ],
+                        "default": "equal"
+                      }
+                    }
+                  },
+                  "starch": {
+                    "description": "Starch content",
+                    "oneOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "object",
+                        "description": "A nutritional quantity with a unit of measurement",
+                        "x-atomic": true,
+                        "required": [
+                          "unit",
+                          "value",
+                          "comparison"
+                        ],
+                        "properties": {
+                          "unit": {
+                            "type": "string",
+                            "description": "Unit of measurement for the weight",
+                            "enum": [
+                              "g",
+                              "mg",
+                              "kg",
+                              "lb",
+                              "oz",
+                              "ml",
+                              "l",
+                              "fl_oz",
+                              "cal",
+                              "kcal",
+                              "kJ",
+                              "ppm",
+                              "m",
+                              "cm",
+                              "mm",
+                              "nm",
+                              "mcg",
+                              "us_fl_oz",
+                              "in"
+                            ],
+                            "example": "g"
+                          },
+                          "value": {
+                            "type": "number",
+                            "description": "The reported nutrient value",
+                            "minimum": 0,
+                            "example": 1.5
+                          },
+                          "comparison": {
+                            "type": "string",
+                            "description": "Indicates how the reported nutrient value should be interpreted relative to the specified number.\nFor example, \"lessThan\" with a value of 1.5 means the nutrient is present in quantities under 1.5 grams.\n",
+                            "enum": [
+                              "lessThan",
+                              "greaterThan",
+                              "equal"
+                            ],
+                            "default": "equal"
+                          }
+                        }
+                      }
+                    ]
+                  },
+                  "polyols": {
+                    "description": "Polyols content",
+                    "oneOf": [
+                      {
+                        "type": "null"
+                      },
+                      {
+                        "type": "object",
+                        "description": "A nutritional quantity with a unit of measurement",
+                        "x-atomic": true,
+                        "required": [
+                          "unit",
+                          "value",
+                          "comparison"
+                        ],
+                        "properties": {
+                          "unit": {
+                            "type": "string",
+                            "description": "Unit of measurement for the weight",
+                            "enum": [
+                              "g",
+                              "mg",
+                              "kg",
+                              "lb",
+                              "oz",
+                              "ml",
+                              "l",
+                              "fl_oz",
+                              "cal",
+                              "kcal",
+                              "kJ",
+                              "ppm",
+                              "m",
+                              "cm",
+                              "mm",
+                              "nm",
+                              "mcg",
+                              "us_fl_oz",
+                              "in"
+                            ],
+                            "example": "g"
+                          },
+                          "value": {
+                            "type": "number",
+                            "description": "The reported nutrient value",
+                            "minimum": 0,
+                            "example": 1.5
+                          },
+                          "comparison": {
+                            "type": "string",
+                            "description": "Indicates how the reported nutrient value should be interpreted relative to the specified number.\nFor example, \"lessThan\" with a value of 1.5 means the nutrient is present in quantities under 1.5 grams.\n",
+                            "enum": [
+                              "lessThan",
+                              "greaterThan",
+                              "equal"
+                            ],
+                            "default": "equal"
+                          }
+                        }
+                      }
+                    ]
+                  }
+                }
+              },
+              "fibre": {
+                "description": "Dietary fiber content",
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "description": "A nutritional quantity with a unit of measurement",
+                    "x-atomic": true,
+                    "required": [
+                      "unit",
+                      "value",
+                      "comparison"
+                    ],
+                    "properties": {
+                      "unit": {
+                        "type": "string",
+                        "description": "Unit of measurement for the weight",
+                        "enum": [
+                          "g",
+                          "mg",
+                          "kg",
+                          "lb",
+                          "oz",
+                          "ml",
+                          "l",
+                          "fl_oz",
+                          "cal",
+                          "kcal",
+                          "kJ",
+                          "ppm",
+                          "m",
+                          "cm",
+                          "mm",
+                          "nm",
+                          "mcg",
+                          "us_fl_oz",
+                          "in"
+                        ],
+                        "example": "g"
+                      },
+                      "value": {
+                        "type": "number",
+                        "description": "The reported nutrient value",
+                        "minimum": 0,
+                        "example": 1.5
+                      },
+                      "comparison": {
+                        "type": "string",
+                        "description": "Indicates how the reported nutrient value should be interpreted relative to the specified number.\nFor example, \"lessThan\" with a value of 1.5 means the nutrient is present in quantities under 1.5 grams.\n",
+                        "enum": [
+                          "lessThan",
+                          "greaterThan",
+                          "equal"
+                        ],
+                        "default": "equal"
+                      }
+                    }
+                  }
+                ]
+              },
+              "vitamins": {
+                "description": "List of vitamins in the product",
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "description": "Vitamin identifier"
+                    },
+                    "additionalProperties": {
+                      "type": "object",
+                      "description": "A nutritional quantity with a unit of measurement",
+                      "x-atomic": true,
+                      "required": [
+                        "unit",
+                        "value",
+                        "comparison"
+                      ],
+                      "properties": {
+                        "unit": {
+                          "type": "string",
+                          "description": "Unit of measurement for the weight",
+                          "enum": [
+                            "g",
+                            "mg",
+                            "kg",
+                            "lb",
+                            "oz",
+                            "ml",
+                            "l",
+                            "fl_oz",
+                            "cal",
+                            "kcal",
+                            "kJ",
+                            "ppm",
+                            "m",
+                            "cm",
+                            "mm",
+                            "nm",
+                            "mcg",
+                            "us_fl_oz",
+                            "in"
+                          ],
+                          "example": "g"
+                        },
+                        "value": {
+                          "type": "number",
+                          "description": "The reported nutrient value",
+                          "minimum": 0,
+                          "example": 1.5
+                        },
+                        "comparison": {
+                          "type": "string",
+                          "description": "Indicates how the reported nutrient value should be interpreted relative to the specified number.\nFor example, \"lessThan\" with a value of 1.5 means the nutrient is present in quantities under 1.5 grams.\n",
+                          "enum": [
+                            "lessThan",
+                            "greaterThan",
+                            "equal"
+                          ],
+                          "default": "equal"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "example": {
+                  "Vitamin C": {
+                    "value": 30,
+                    "unit": "mg",
+                    "comparison": "equal"
+                  }
+                }
+              },
+              "minerals": {
+                "description": "List of minerals in the product",
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "object",
+                    "propertyNames": {
+                      "type": "string",
+                      "description": "Mineral identifier"
+                    },
+                    "additionalProperties": {
+                      "type": "object",
+                      "description": "A nutritional quantity with a unit of measurement",
+                      "x-atomic": true,
+                      "required": [
+                        "unit",
+                        "value",
+                        "comparison"
+                      ],
+                      "properties": {
+                        "unit": {
+                          "type": "string",
+                          "description": "Unit of measurement for the weight",
+                          "enum": [
+                            "g",
+                            "mg",
+                            "kg",
+                            "lb",
+                            "oz",
+                            "ml",
+                            "l",
+                            "fl_oz",
+                            "cal",
+                            "kcal",
+                            "kJ",
+                            "ppm",
+                            "m",
+                            "cm",
+                            "mm",
+                            "nm",
+                            "mcg",
+                            "us_fl_oz",
+                            "in"
+                          ],
+                          "example": "g"
+                        },
+                        "value": {
+                          "type": "number",
+                          "description": "The reported nutrient value",
+                          "minimum": 0,
+                          "example": 1.5
+                        },
+                        "comparison": {
+                          "type": "string",
+                          "description": "Indicates how the reported nutrient value should be interpreted relative to the specified number.\nFor example, \"lessThan\" with a value of 1.5 means the nutrient is present in quantities under 1.5 grams.\n",
+                          "enum": [
+                            "lessThan",
+                            "greaterThan",
+                            "equal"
+                          ],
+                          "default": "equal"
+                        }
+                      }
+                    }
+                  }
+                ],
+                "example": {
+                  "sodium": {
+                    "unit": "mg",
+                    "value": 100,
+                    "comparison": "equal"
+                  },
+                  "potassium": {
+                    "unit": "mg",
+                    "value": 200,
+                    "comparison": "equal"
+                  }
+                }
+              },
+              "protein": {
+                "type": "object",
+                "description": "A nutritional quantity with a unit of measurement",
+                "x-atomic": true,
+                "required": [
+                  "unit",
+                  "value",
+                  "comparison"
+                ],
+                "properties": {
+                  "unit": {
+                    "type": "string",
+                    "description": "Unit of measurement for the weight",
+                    "enum": [
+                      "g",
+                      "mg",
+                      "kg",
+                      "lb",
+                      "oz",
+                      "ml",
+                      "l",
+                      "fl_oz",
+                      "cal",
+                      "kcal",
+                      "kJ",
+                      "ppm",
+                      "m",
+                      "cm",
+                      "mm",
+                      "nm",
+                      "mcg",
+                      "us_fl_oz",
+                      "in"
+                    ],
+                    "example": "g"
+                  },
+                  "value": {
+                    "type": "number",
+                    "description": "The reported nutrient value",
+                    "minimum": 0,
+                    "example": 1.5
+                  },
+                  "comparison": {
+                    "type": "string",
+                    "description": "Indicates how the reported nutrient value should be interpreted relative to the specified number.\nFor example, \"lessThan\" with a value of 1.5 means the nutrient is present in quantities under 1.5 grams.\n",
+                    "enum": [
+                      "lessThan",
+                      "greaterThan",
+                      "equal"
+                    ],
+                    "default": "equal"
+                  }
+                }
+              },
+              "salt": {
+                "type": "object",
+                "description": "A nutritional quantity with a unit of measurement",
+                "x-atomic": true,
+                "required": [
+                  "unit",
+                  "value",
+                  "comparison"
+                ],
+                "properties": {
+                  "unit": {
+                    "type": "string",
+                    "description": "Unit of measurement for the weight",
+                    "enum": [
+                      "g",
+                      "mg",
+                      "kg",
+                      "lb",
+                      "oz",
+                      "ml",
+                      "l",
+                      "fl_oz",
+                      "cal",
+                      "kcal",
+                      "kJ",
+                      "ppm",
+                      "m",
+                      "cm",
+                      "mm",
+                      "nm",
+                      "mcg",
+                      "us_fl_oz",
+                      "in"
+                    ],
+                    "example": "g"
+                  },
+                  "value": {
+                    "type": "number",
+                    "description": "The reported nutrient value",
+                    "minimum": 0,
+                    "example": 1.5
+                  },
+                  "comparison": {
+                    "type": "string",
+                    "description": "Indicates how the reported nutrient value should be interpreted relative to the specified number.\nFor example, \"lessThan\" with a value of 1.5 means the nutrient is present in quantities under 1.5 grams.\n",
+                    "enum": [
+                      "lessThan",
+                      "greaterThan",
+                      "equal"
+                    ],
+                    "default": "equal"
+                  }
+                }
+              },
+              "hfss": {
+                "description": "Whether the product is classified as high fat, saturated fat, sugar or salt (HFSS)",
+                "oneOf": [
+                  {
+                    "type": "null"
+                  },
+                  {
+                    "type": "boolean"
+                  }
+                ]
+              }
+            }
+          }
+        }
+      ]
+    },
+    "legacy_id": {
+      "description": "Legacy system ID",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "integer"
+        }
+      ]
+    },
+    "legacy_created_at": {
+      "description": "Legacy created at timestamp",
+      "oneOf": [
+        {
+          "type": "null"
+        },
+        {
+          "type": "string",
+          "format": "date-time"
+        }
+      ]
+    }
+  }
+}

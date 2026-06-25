@@ -1,0 +1,375 @@
+# Task
+Extract structured product specification data from this document and output it according to the provided JSON schema.
+
+# Output Requirements
+- Output ONLY valid JSON conforming to the provided schema
+- Use JSON null (not string "null") for unavailable fields
+- Ensure extracted values match their specified data types
+
+# Field Extraction Rules
+
+## name
+Construct product name from document fields with proper adjective ordering.
+
+### Key Rules:
+1. **Commercial name is PRIMARY**: Use Commercial name or Product Description field as base. Legal denomination ONLY adds core product type if the name alone doesn't indicate what the product IS.
+   - **Distinctive/branded names stand ALONE** - If name is a distinctive product name (e.g., "Starburst", "Galaxy Minstrels", "Tropical Blast"), do NOT append legal product type
+   - **Descriptive names MAY need product type** - If name is purely descriptive (e.g., "Large Buttons", "Mini Curls"), add product type from Legal denomination (e.g., "Chocolate")
+   - **IGNORE ingredient section headers** - Text like "FRUIT FLAVOUR GUMS" or "CHOCOLATE CONFECTIONERY" at the START of ingredients is NOT a legal denomination to append
+   - DO NOT include regulatory details (Carbonated, With Taurine, Contains X%, Fruit Flavour, Sweet Foam)
+2. **Product Name field**: Use if no Legal/Commercial split. ALWAYS exclude brand even if included.
+   - **Brand product lines** - If Product Name starts with "Brand + Category" (e.g., "RedBull Energy", "Tropicana Orange"), exclude BOTH as brand-related. The category word belongs with "Drink"/"Juice" from Legal Name.
+   - Example: Product="Monster Energy Zero Ultra", Legal="Energy Drink" → "Zero Ultra Energy Drink" (not "Energy Zero Ultra")
+3. **From description**: Exclude brand, use English (not foreign language), INCLUDE form factors that describe WHAT it IS (Nespresso Capsules, Tea Bags, Coffee Pods).
+4. **Language**: Use English description only when both English and foreign names exist.
+
+### Adjective Ordering (CRITICAL):
+Order: Coating/Prep → Opinion → Size → Quality → Shape → Age → Colour → Origin → Material → Type → Purpose → Product
+
+**Coating/Preparation adjectives come FIRST:**
+- CORRECT: "Breaded Seasoned Chicken Strips" (Coating → Quality)
+- WRONG: "Seasoned Chicken Breaded Strips"
+- CORRECT: "Battered Cod Fillets"
+- WRONG: "Cod Battered Fillets"
+
+**Size ALWAYS comes before Colour (especially for chocolate products):**
+When combining Size (Large, Mini, X-Large) with Colour (White, Dark, Milk) for chocolate:
+- CORRECT: "Large White Chocolate Drops" → Size first, then Colour
+- WRONG: "White Large Chocolate Drops" → Colour should not come before Size
+- CORRECT: "Mini Dark Chocolate Chips" → Size first, then Colour
+- WRONG: "Dark Mini Chocolate Chips" → Colour should not come before Size
+- CORRECT: "Jumbo Milk Chocolate Coins" → Size first, then Colour
+- WRONG: "Milk Chocolate Jumbo Coins" → Colour should not come before Size
+
+### EXCLUDE from name:
+- **Brand name** - ALWAYS exclude
+- Volume/weight (330ml, 1kg)
+- Pack quantities (12-pack, 10 capsules)
+- **Quality grades and marketing** (Fancy Quality Grade, Premium, Gourmet, Select)
+- **Processing methods** (Pre-Cooked, Par-Baked, Pre-Fried) - unless defining characteristic
+- "Canned" for canned products
+- Foreign names when English available
+- **Duplicate words** - Remove repeated words that appear due to combining fields:
+  - "CHICKEN SOUP MIX SOUP" → "Chicken Soup Mix"
+  - "BEEF STOCK POWDER STOCK" → "Beef Stock Powder"
+  - "TOMATO SAUCE PASTA SAUCE" → "Tomato Pasta Sauce"
+
+### Examples:
+| Document Shows | Correct Name |
+|----------------|--------------|
+| Legal: "Milk chocolate", Commercial: "Large Buttons" | "Large Milk Chocolate Buttons" (add product type - "Buttons" alone unclear) |
+| Legal: "Fruit flavour sweets", Commercial: "Tropical Blast" | "Tropical Blast" (distinctive name, don't add legal) |
+| Product: "Monster Energy Zero Ultra", Legal: "Energy Drink" | "Zero Ultra Energy Drink" (exclude "Monster Energy", add "Energy Drink" from Legal) |
+| Product: "Rockstar Energy Tropical Burst", Legal: "Carbonated Energy Drink" | "Tropical Burst Energy Drink" (exclude brand+Energy, exclude Carbonated) |
+| Short Name: "Seasoned Chicken Strips", Description: "Breaded, pre-fried" | "Breaded Seasoned Chicken Strips" (Coating first, Pre-fried excluded) |
+| Product Name: "BrandX Morning Roast 12 Coffee Pods" | "Morning Roast Coffee Pods" (brand excluded, count excluded, form factor KEPT) |
+
+## unit_of_measure (Packaging Unit)
+**CRITICAL**: This is the **inner consumer packaging** type, NOT metric units. NEVER use kg, g, ml, L, etc.
+
+This should describe what the individual product is packaged in. Infer from the product name and packaging information. Use a single lowercase word.
+
+Valid values: **bag**, **bottle**, **box**, **can**, **carton**, **jar**, **piece**, **pouch**, **roll**, **sachet**, **sheet**.
+
+Use **item** as the default if no packaging type can be determined.
+Use **pack** only if the product is a multi-item pack containing different sub-products (e.g. a variety/mix-pack).
+
+### How to determine the value:
+1. "Pack format" column (most reliable)
+2. UC (Unit of Consumer) level in wholesale specs — look at the Delivery form or similar tables for the inner packaging format
+3. "Packaging type" or "Pack Type" fields
+4. Infer from the product name and description
+
+**Multi-unit consumer products**: When a product contains multiple individual units sold together (e.g., 12 tea bags in a carton, 20 pods in a box, 6 bars in a pouch), the unit_of_measure is the **consumer package** that is sold as a single item — not the individual unit inside it. The same applies to weights: use the total net weight of the consumer package, not the per-unit weight.
+
+**IMPORTANT — avoid outer/shipping packaging:**
+- Wholesale specs often have multiple packaging levels (UC = inner unit, BOX/CASE = outer shipping). Always use the **UC/inner level**, never the outer case/box/pallet.
+- "Packaging information" tables with material codes (e.g. 21-PAP, 20-PAP) describe the **material classification**, not the packaging format. Do not use these to determine unit_of_measure. Prefer the "Delivery form" or "Pack format" tables.
+- If the document says "4UC/BOX" or "6 x 1kg", the unit_of_measure is what each UC/inner unit is packaged in, not the outer box.
+
+## brand
+Extract the PRODUCT brand name — the name a consumer recognises on the shelf. Preserve EXACT spelling including apostrophes ("Tony's" not "Tonys").
+
+Brand ≠ Manufacturer ≠ Distributor ≠ Retailer.
+
+**How to identify the brand:**
+1. Look at the **product name** field — the brand is usually the first word(s) before the product description (e.g., in "BrandX Morning Roast Coffee Pods", the brand is "BrandX")
+2. Product imagery/packaging mockups on the spec sheet often show the brand prominently
+3. A "Brand" or "Brand Name" field if present
+
+**Common mistake — do NOT use the document header company as the brand.** Spec sheets are created by the manufacturer, so the manufacturer's name/logo appears in the document header. But the manufacturer and brand are often different — one manufacturer can produce many brands. The brand is what consumers see on the product packaging, not who made the document.
+
+## manufacturers
+Extract company names that MANUFACTURE the product (array of strings). Manufacturer ≠ Supplier ≠ Distributor.
+
+**Where to look** (priority order):
+1. Company LOGO/NAME in document HEADER - spec sheets are created BY the manufacturer
+2. Document FOOTER with company name and address
+3. "Manufactured by:", "Produced by:", "Made by:" fields
+4. "Manufacturing site" field with production address
+
+**KEY**: The company whose branding appears on the document header is typically the manufacturer - even if also listed as "supplier" in ingredient tables.
+
+**When to use null**:
+- No manufacturing company can be identified in the document
+- Only a distributor/wholesaler is shown with no production role
+- Only brand name without company details
+- **Be conservative**: If unsure whether a company is manufacturer or distributor, use null
+
+## manufacturing_country_codes
+Extract as ISO 3166-1 alpha-2 country codes (two letters).
+
+**Where to look:**
+- "Made in", "Product of", "Country of origin", "Manufacturing country" sections
+- Document subtitle or header (e.g., "Regulatory Data Sheet, Great Britain" → ["GB"])
+- Manufacturer's address in header/footer (e.g., "Milton Keynes, UK" → ["GB"])
+- Manufacturing site address
+- Can be multiple countries
+
+Examples:
+- "Made in United Kingdom" → ["GB"]
+- "Product of Spain" → ["ES"]
+- "Made in UK and Ireland" → ["GB", "IE"]
+- Document header: "Regulatory Data Sheet, Great Britain" → ["GB"]
+
+**Special EU Rule**: If origin says "EU" or "European Union", list ALL EU country codes:
+["AT", "BE", "BG", "HR", "CY", "CZ", "DK", "EE", "FI", "FR", "DE", "GR", "HU", "IE", "IT", "LV", "LT", "LU", "MT", "NL", "PL", "PT", "RO", "SK", "SI", "ES", "SE"]
+
+## commodity_hs_code
+Extract the HS (Harmonized System) tariff code if present.
+- Usually 6-10 digit number
+- May be labeled as "HS Code", "Commodity Code", or "Tariff Code"
+
+## ingredients
+Extract from **consumer-facing ingredient list** ("INGREDIENT LISTING" or "Ingredients:"), NOT the detailed "INGREDIENT INFORMATION" table with Supplier/Country/Declared columns.
+
+### Key Rules:
+1. **Subingredients stay WITH main ingredient** - Do NOT separate them as individual ingredients.
+
+   **How to identify subingredients** - they are INSIDE or AFTER their parent:
+   - **Parentheses**: "Milk Chocolate (Sugar, Cocoa Butter, MILK Powder)" - items in () are subingredients
+   - **Brackets**: "Vegetable Oil [Palm, Sunflower]" - items in [] are subingredients
+   - **Colon lists**: "Glazing Agents: Beeswax, Carnauba Wax" - items after : are subingredients
+   - **"Contains" lists**: "Vegetable Fats (Contains Palm, Rapeseed)" - items after "Contains" are subingredients
+   - **Nested structures**: "Chocolate Chips (Sugar, Cocoa Mass (Cocoa Butter, Cocoa Solids))" - entire thing is 1 ingredient
+
+   **CORRECT extraction examples**:
+   | Ingredient List Text | Number of Ingredients | Extracted Names |
+   |---------------------|----------------------|-----------------|
+   | "Milk Chocolate (Sugar, Cocoa Butter, MILK)" | 1 | "Milk Chocolate (Sugar, Cocoa Butter, MILK)" |
+   | "Fortified WHEAT Flour (Flour, Iron, Niacin, Thiamin)" | 1 | "Fortified WHEAT Flour (Flour, Iron, Niacin, Thiamin)" |
+   | "Fruit Concentrates: Apple, Orange, Lemon" | 1 | "Fruit Concentrates: Apple, Orange, Lemon" |
+   | "Glazing Agents: Beeswax, Carnauba Wax" | 1 | "Glazing Agents: Beeswax, Carnauba Wax" |
+   | "Emulsifiers: SOYA Lecithin, E471" | 1 | "Emulsifiers: SOYA Lecithin, E471" |
+
+   **WRONG - never do this**:
+   - Extracting "Sugar" as separate ingredient when it appears inside "Milk Chocolate (Sugar, ...)"
+   - Extracting "Beeswax" as separate ingredient when it appears after "Glazing Agents:"
+   - Extracting "Apple" as separate ingredient when it appears in "Fruit Concentrates: Apple, Orange"
+
+2. **Percentage**: Main ingredient only, as decimal (0.5 not 50%). Keep subingredient percentages in name string.
+   - For ranges like "20-25%", use the midpoint (0.225)
+   - For "< 0.1%", use 0.001
+3. **Allergens in ALL CAPS**: MILK, WHEAT, BARLEY, EGGS, etc.
+4. **Title Case**: Except of, in, with, on, and
+5. **Formatting**: Ensure proper spacing in ingredient names. PDFs often have missing spaces — always insert a space after percentage signs and between words (e.g., "25% Arabica" not "25%Arabica").
+
+**Fields**: name (with allergens in CAPS), percentage (decimal or null), origin_country_codes (ISO codes or null)
+
+## content_declarations (Allergens)
+**For food products**, ALWAYS include ALL 26 allergens in order:
+wheat, barley, oats, rye, gluten, crustaceans, eggs, fish, peanuts, soybeans, milk, celery, mustard, sesame, sulphur-dioxide, sulphites, lupin, molluscs, almonds, hazelnuts, cashews, walnuts, pecan-nuts, brazil-nuts, pistachio-nuts, macadamia-nuts
+
+**Non-food items**: use null for entire field.
+
+### Status Values:
+- **"yes"** - Contains allergen (also if in CAPS in ingredients)
+- **"no"** - Does not contain (default if not mentioned)
+- **"may-contain"** - Cross-contamination/"may contain traces of"
+- **"unknown"** - ONLY for gluten cereals when source unspecified
+
+### Special Rules:
+- **Gluten**: If gluten="yes" but wheat/rye/oats/barley source unknown, check ingredients. If none found, set all four cereals to "unknown".
+- **Sulphur-dioxide & sulphites**: ALWAYS set quantity to `{"unit": "ppm", "value": 10, "comparison": "greaterThan"}` for both entries. This reflects the EU regulatory threshold (must be declared when present at concentrations greater than 10 mg/kg).
+- **comparison field**: Only "equal", "lessThan", "greaterThan" - NEVER "unknown".
+- wheat, barley, oats, rye are SEPARATE from gluten (if WHEAT present → wheat="yes" AND gluten="yes")
+
+## content_declarations (Additives)
+**For food products**, Include if detected with type "additive":
+artificial-antioxidants, artificial-preservatives, artificial-sweeteners, artificial-flavour-enhancers
+
+## dietary_suitability
+Extract dietary suitability ONLY if present on the spec sheet. Do NOT infer from ingredients. Include both suitable AND not suitable entries — if the spec explicitly states a product is NOT suitable (e.g., "0", "No", "Not suitable"), include it with status "false".
+
+**CRITICAL — read table columns carefully**: Diet suitability sections often use YES/NO column layouts. Before extracting, identify which column is YES and which is NO. A value of TRUE/FALSE in a column takes its meaning from the **column header**, not the cell value alone. For example, if "Kosher Approved" has FALSE under a YES column, it means the product is NOT kosher (status "false"). Getting this wrong has serious consequences.
+
+**Approved names** (use these exact names and spelling):
+Vegan, Vegetarian, Halal, Kosher, Gluten Free, Wheat Free, Rye Free, Barley Free, Oat Free, Dairy Free, Lactose Free, Egg Free, Nut Free, Peanut Free, Soy Free, Sesame Free, Celery Free, Mustard Free, Fish Free, Crustacean Free, Mollusc Free, Sulphite Free, No Added Sugar, Organic, Pescetarian, Raw, Keto, Suitable for Diabetics, Suitable for Children, Suitable for Pregnancy
+
+**Common aliases** — map these document terms to the approved names:
+- "Coeliacs" / "Suitable for Coeliacs" → **Gluten Free**
+- "Lactose Intolerance" / "Suitable for Lactose Intolerance" → **Lactose Free**
+
+**Status values** (only these three are valid):
+- **"true"** - Product is suitable (e.g., "1", "Yes", "Suitable")
+- **"false"** - Product is explicitly NOT suitable (e.g., "0", "No", "Not suitable")
+- **"certified"** - ONLY if the spec states "certified", a certification logo/symbol is visible (Halal, Kosher OU/K, Organic), or a certificate number is mentioned. Do not use "certified" just because the product is suitable — use "true" unless certification is explicitly indicated.
+
+If no dietary section exists, use null for the entire field.
+
+## references
+Extract product barcodes ONLY if clearly visible/stated:
+- **EAN_13**: 13-digit European Article Number (starts with country code)
+- **EAN_8**: 8-digit compact EAN
+- **UPC_A**: 12-digit Universal Product Code
+
+**IMPORTANT**:
+- Use null for the entire references object if no barcodes are visible
+- Do NOT generate or guess barcode numbers
+- Only extract if a barcode number is explicitly printed on the document
+- When expressed as check boxes, take special care to not confuse a ticked box for true, it could be in a NO column. Not safe to assume, critically double check.
+
+
+## logistics.storage
+Extract as array with one entry:
+
+- **shelf_life_days**: INTEGER. Convert months × 30 (24 months = 720 days)
+- **hours_after_opening**: INTEGER in HOURS (30 days = 720 hours). Null if not specified.
+- **conditions**: Preserve EXACT text from document, do not paraphrase
+- **temperature_min_celsius** / **temperature_max_celsius**: INTEGER
+
+**Temperature rules**:
+- Only use min/max temperature values you find in the spec sheet
+- Don't infer temperatures from storage conditions such as 'Ambient'.
+- "Store at 12°C" → min=12, max=12 | "below -18°C" → min=null, max=-18
+
+## logistics.physical_properties
+Extract physical characteristics:
+
+**inner_gross_weight**: The net weight plus packaging material weight at this level, if explicitly stated. Use a Quantity (e.g., {"unit": "kg", "value": 1.2}). Null if not given.
+
+**packaging**:
+- **type**: The form factor of the packaging/main material. This is NOT the same as unit_of_measure — it describes the physical packaging more specifically (e.g., "Corrugated cardboard box", "Shrink wrap film", "Aluminium can"). Use the description from the document.
+- **dimensions**: Height, width, and length of the packaging, each as a Quantity (e.g., {"unit": "mm", "value": 150}). Null if not given.
+- **material**: Array of packaging materials, each with a name and optional weight (e.g., [{"name": "Cardboard", "weight": {"unit": "g", "value": 45}}, {"name": "Plastic", "weight": null}]). Set weight to null if not stated.
+
+**product**:
+- **weight.inner_net**: Net product weight (excluding packaging) with unit and value (e.g., {"unit": "g", "value": 250} or {"unit": "kg", "value": 2.5})
+- **weight.drained**: Drained weight for products in liquid (e.g., pickles in brine, fruit in syrup)
+- **volume**: Volume of the product, for liquids (e.g., {"unit": "ml", "value": 330})
+
+## nutrition
+Extract nutritional information as an ARRAY - one entry per serving size column.
+
+**IMPORTANT**: If all nutrition values are "NA", "N/A", "Not applicable", or similar non-numeric entries, set nutrition to **null** — this means nutrition data is not applicable for this product. Only extract nutrition when actual numeric values are present.
+
+**IMPORTANT**: If the nutrition table has multiple columns (e.g., "per 100ml" AND "per 250ml Can"), create a separate entry for EACH column.
+
+For each serving size:
+- **serving**: The reference amount (e.g., 100g, 100ml, 250ml)
+- **comparison**: MUST be one of: "equal", "lessThan", "greaterThan". NEVER use "unknown".
+  - Use "equal" for exact values (default if not specified)
+  - Use "lessThan" for "<X" values
+  - Use "greaterThan" for ">X" values
+
+Example: A table with "per 100ml" and "per 250ml Can" columns = 2 nutrition entries
+
+Required fields (EU nutrition labels):
+- Energy in both kcal and kJ
+- Fat: total and saturated (in grams)
+- Carbohydrates: total and sugars (in grams)
+- Fibre (in grams) - only if stated
+- Protein (in grams)
+- Salt (in grams)
+
+Optional fields (extract if present):
+- **vitamins**: Map of vitamin name → quantity. Use the name as it appears on the document. Accepted names include both EU standardised names and common/scientific names with B-group identifiers:
+  Vitamin A, Thiamine (B1), Riboflavin (B2), Niacin (B3), Pantothenic Acid (B5), Vitamin B6, Biotin (B7), Folic Acid (B9), Vitamin B12, Vitamin C, Vitamin D, Vitamin E, Vitamin K
+- **minerals**: Map of mineral name → quantity. Use these standardised names as map keys:
+  Calcium, Magnesium, Iron, Copper, Iodine, Zinc, Manganese, Sodium, Potassium, Selenium, Chromium, Molybdenum, Fluoride, Chloride, Phosphorus, Boron
+
+**IMPORTANT**:
+- Do NOT abbreviate, use snake_case, ALL CAPS or lowercase.
+
+Correct example:
+```json
+"vitamins": {
+  "Vitamin A": {"value": 0.045, "unit": "mg", "comparison": "equal"},
+  "Thiamine (B1)": {"value": 0.077, "unit": "mg", "comparison": "equal"},
+  "Niacin (B3)": {"value": 6.4, "unit": "mg", "comparison": "equal"},
+  "Vitamin C": {"value": 0.485, "unit": "mg", "comparison": "equal"}
+},
+"minerals": {
+  "Calcium": {"value": 227.4, "unit": "mg", "comparison": "equal"},
+  "Iron": {"value": 0.27, "unit": "mg", "comparison": "equal"}
+}
+```
+WRONG: "vitamin_a", "B1", "VITAMIN A", "calcium"
+
+# Fields to ALWAYS set to null
+The following fields are internal system fields and should NEVER be extracted from documents:
+- **supplier_id**: Always null (assigned by system, not in documents)
+- **legacy_id**: Always null (internal database ID)
+- **legacy_created_at**: Always null (internal timestamp)
+- **image_url**: Always null (uploaded separately)
+
+# Quality Checks
+Before finalizing your output:
+1. Verify unit_of_measure is a packaging type (e.g. jar, bag, bottle, can), NOT a metric unit (g, ml, kg)
+2. Verify content_declarations includes all 26 allergens listed above
+3. Verify nutrition values use correct comparison ("equal", "lessThan", "greaterThan")
+4. Verify percentages in ingredients are decimals (0.64 not 64)
+5. Verify country codes are 2-letter ISO codes (GB, ES, US)
+6. Confirm output is valid JSON
+
+# Evidence Snippet Guidelines for Spec Fields
+
+## Multiple Evidence Entries for Ingredients
+
+When a field's value comes from MULTIPLE locations in the document, provide SEPARATE evidence entries for each:
+
+- For ingredients with multiple country codes: one evidence entry per country
+- For combined fields: one evidence entry per source location
+
+Example for an ingredient with countries from two columns:
+```json
+"/requests/0/ingredients/0": {
+  "evidence": [
+    {"label": "Ingredient name", "snippet": "Yeast", "page": 1},
+    {"label": "Manufacturing country", "snippet": "UK", "page": 1},
+    {"label": "Origin country", "snippet": "Germany", "page": 1}
+  ],
+  "confidence": "high"
+}
+```
+
+## Snippet Examples for Spec Tables
+
+For table values, use text from the SAME ROW to add context, not column headers:
+- For ingredients row: "6% Distilled Malt Vinegar" or "Malted Barley Conf N/A"
+- For nutrition: "Fat (g) 0.5" NOT "Fat 0.5"
+
+### CRITICAL for Nutrition Tables:
+
+Nutrition values like "<0.5", "0", "N/A" appear multiple times. You MUST include the nutrient name:
+- WRONG: "<0.5" (appears 5+ times)
+- CORRECT: "Fat (g) <0.5" or "Protein (g) <0.5"
+
+### CRITICAL for Ingredients:
+
+For each ingredient, provide MULTIPLE evidence entries:
+1. One for the ingredient NAME (e.g., "Yeast", "Water", "Malted Barley")
+2. One for EACH country code, with enough context to locate it uniquely
+
+Since country codes like "UK" appear multiple times on the page, include the ingredient name or adjacent text:
+
+Example for Yeast row with UK (manufacture) and Germany (origin):
+```json
+"evidence": [
+  {"label": "Ingredient", "snippet": "Yeast", "page": 1},
+  {"label": "Country of Manufacture", "snippet": "Conf UK Germany", "page": 1},
+  {"label": "Country of Origin", "snippet": "UK Germany", "page": 1}
+]
+```
+
+The snippets include adjacent cell text to make them unique on the page while still highlighting near the actual values.

@@ -1,0 +1,274 @@
+{
+  "id": null,
+  "created_at": null,
+  "updated_at": null,
+  "timestamps": {
+    "cerve": {
+      "created_at": null,
+      "updated_at": null
+    },
+    "supplier": {
+      "created_at": null,
+      "updated_at": null
+    }
+  },
+  "name": "Orange Juice from Concentrate 100% Pure",
+  "unit_of_measure": "carton",
+  "supplier_id": null,
+  "brand": "Tropicana",
+  "marketing_description": null,
+  "directions_for_use": null,
+  "alcohol_percentage": null,
+  "manufacturers": null,
+  "image_url": null,
+  "manufacturing_country_codes": [
+    "ES"
+  ],
+  "commodity_hs_code": null,
+  "sub_specs": null,
+  "dietary_suitability": [
+    {
+      "name": "Vegan",
+      "status": "true"
+    },
+    {
+      "name": "Vegetarian",
+      "status": "true"
+    },
+    {
+      "name": "Gluten Free",
+      "status": "true"
+    }
+  ],
+  "price_marked_packs": null,
+  "ingredients": [
+    {
+      "name": "Orange Juice from Concentrate",
+      "percentage": 1.0,
+      "origin_country_codes": [
+        "ES"
+      ]
+    },
+    {
+      "name": "Vitamin C",
+      "percentage": null,
+      "origin_country_codes": null
+    }
+  ],
+  "content_declarations": [
+    {
+      "name": "wheat",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "barley",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "oats",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "rye",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "gluten",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "crustaceans",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "eggs",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "fish",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "peanuts",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "soybeans",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "milk",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "celery",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "mustard",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "sesame",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "sulphur-dioxide",
+      "type": "allergen",
+      "status": "no",
+      "quantity": {
+        "unit": "ppm",
+        "value": 10,
+        "comparison": "greaterThan"
+      }
+    },
+    {
+      "name": "sulphites",
+      "type": "allergen",
+      "status": "no",
+      "quantity": {
+        "unit": "ppm",
+        "value": 10,
+        "comparison": "greaterThan"
+      }
+    },
+    {
+      "name": "lupin",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "molluscs",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "almonds",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "hazelnuts",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "cashews",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "walnuts",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "pecan-nuts",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "brazil-nuts",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "pistachio-nuts",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    },
+    {
+      "name": "macadamia-nuts",
+      "type": "allergen",
+      "status": "no",
+      "quantity": null
+    }
+  ],
+  "references": {
+    "EAN_13": "5410188006759",
+    "EAN_8": null,
+    "UPC_A": null
+  },
+  "logistics": {
+    "storage": [
+      {
+        "shelf_life_days": 360,
+        "hours_after_opening": null,
+        "conditions": "Store below 25C, refrigerate after opening",
+        "temperature_min_celsius": null,
+        "temperature_max_celsius": 25
+      }
+    ],
+    "physical_properties": {
+      "inner_gross_weight": null,
+      "packaging": {
+        "type": "Carton",
+        "dimensions": {
+          "height": {
+            "unit": "mm",
+            "value": 235
+          },
+          "width": {
+            "unit": "mm",
+            "value": 95
+          },
+          "length": {
+            "unit": "mm",
+            "value": 65
+          }
+        },
+        "material": null
+      },
+      "product": {
+        "weight": {
+          "inner_net": null,
+          "drained": null
+        },
+        "volume": {
+          "unit": "ml",
+          "value": 1000
+        }
+      }
+    }
+  },
+  "nutrition": null,
+  "legacy_id": null,
+  "legacy_created_at": null
+}
