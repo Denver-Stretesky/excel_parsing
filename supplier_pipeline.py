@@ -85,6 +85,11 @@ HEADER_KEYWORDS = {
 
 HEADER_SCAN_DEPTH = 30
 
+# Trailing-block trim: consecutive off-pattern rows that end the product list,
+# and how many rows under the header define what "on-pattern" means.
+TRIM_BUFFER = 5
+TRIM_SAMPLE_ROWS = 10
+
 
 def _score_header_row(cells: list[str]) -> tuple[int, int]:
     """(keyword count, populated count). Higher is better. Tie-break by row order."""
@@ -118,10 +123,25 @@ def _pick_header_row(rows_iter: list[list[str]]) -> int | None:
 
 
 def _prune_empty_columns(headers: list[str], rows: list[list[str]]) -> tuple[list[str], list[list[str]]]:
-    """Drop columns where the header is blank — these are trailing pads added
-    by openpyxl when a sheet's max_column extends past the real data."""
-    keep_idx = [i for i, h in enumerate(headers) if h]
-    new_headers = [headers[i] for i in keep_idx]
+    """Drop columns that have neither a header nor any data — these are the
+    trailing pads openpyxl adds when a sheet's max_column extends past the real
+    data, plus spacer columns.
+
+    A blank header over a column that DOES hold data is kept and given a
+    placeholder name: suppliers routinely leave the SKU-code or product-name
+    column unlabelled, and dropping it loses the product name entirely."""
+    used = {i for row in rows for i, c in enumerate(row) if c}
+    width = max([len(headers)] + [len(r) for r in rows])
+    keep_idx = [i for i in range(width)
+                if (i < len(headers) and headers[i]) or i in used]
+    new_headers: list[str] = []
+    for i in keep_idx:
+        base = (headers[i] if i < len(headers) else "") or f"Column {i + 1}"
+        name, n = base, 1
+        while name in new_headers:
+            n += 1
+            name = f"{base} ({n})"
+        new_headers.append(name)
     new_rows = [[row[i] if i < len(row) else "" for i in keep_idx] for row in rows]
     return new_headers, new_rows
 
@@ -130,10 +150,15 @@ def read_file(src: Path) -> tuple[list[str], list[dict[str, str]]]:
     """Read csv/xlsx/xls and return (headers, rows). No filtering, no writes."""
     ext = src.suffix.lower()
     if ext == ".csv":
+        # Read positionally, not with DictReader: a csv's first line is no more
+        # likely to hold the headers than a sheet's first row is.
         with src.open(newline="", encoding="utf-8-sig") as fh:
-            reader = csv.DictReader(fh)
-            headers = [(h or "").strip() for h in (reader.fieldnames or [])]
-            row_cells = [[stringify(r.get(h, "")) for h in headers] for r in reader]
+            all_rows = [[stringify(c) for c in r] for r in csv.reader(fh)]
+        idx = _pick_header_row(all_rows)
+        if idx is None:
+            raise SystemExit("no header row found in csv")
+        headers = all_rows[idx]
+        row_cells = all_rows[idx + 1:]
     elif ext == ".xlsx":
         import openpyxl
         wb = openpyxl.load_workbook(src, data_only=True, read_only=True)
@@ -164,6 +189,34 @@ def read_file(src: Path) -> tuple[list[str], list[dict[str, str]]]:
     return headers, rows
 
 
+def _trim_trailing_block(headers: list[str], rows: list[dict[str, str]]) -> list[dict[str, str]]:
+    """Cut the data at the first run of TRIM_BUFFER off-pattern rows.
+
+    Promotion forms tack disclaimers, period calendars and other dropdown
+    lookup tables onto the bottom of the product list. Those rows fill a
+    different set of columns from the real data, so once TRIM_BUFFER rows in a
+    row stop matching the pattern of the first rows under the header, the
+    product list has ended. The buffer is what stops a lone blank line or
+    section divider mid-list from truncating the file early."""
+    sample = [r for r in rows if any(r.values())][:TRIM_SAMPLE_ROWS]
+    if not sample:
+        return rows
+    threshold = max(1, int(0.5 * len(sample)))
+    core = {h for h in headers if sum(1 for r in sample if r.get(h)) >= threshold}
+    if not core:
+        return rows
+
+    run = 0
+    for i, row in enumerate(rows):
+        if sum(1 for h in core if row.get(h)) * 2 >= len(core):
+            run = 0  # on-pattern: fills at least half the data columns
+            continue
+        run += 1
+        if run >= TRIM_BUFFER:
+            return rows[: i + 1 - TRIM_BUFFER]
+    return rows
+
+
 def peek_headers(src: Path) -> list[str]:
     """Just the headers — used by the UI to populate the SKU-column dropdown."""
     return read_file(src)[0]
@@ -172,11 +225,16 @@ def peek_headers(src: Path) -> list[str]:
 def read_to_csv(src: Path, dst: Path) -> tuple[list[str], list[dict[str, str]]]:
     headers, rows = read_file(src)
 
+    trimmed = _trim_trailing_block(headers, rows)
+    dropped = len(rows) - len(trimmed)
+    if dropped and any(any(r.values()) for r in rows[len(trimmed):]):
+        print(f"[READ] trailing block trimmed: {dropped} row(s) dropped after the product list")
+
     # Drop rows that carry almost nothing — blank lines and section dividers.
     def keep(row: dict[str, str]) -> bool:
         return sum(1 for v in row.values() if v) >= 2
 
-    kept = [r for r in rows if keep(r)]
+    kept = [r for r in trimmed if keep(r)]
 
     with dst.open("w", newline="", encoding="utf-8") as fh:
         w = csv.DictWriter(fh, fieldnames=headers, extrasaction="ignore")

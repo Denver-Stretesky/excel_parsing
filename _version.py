@@ -6,4 +6,4 @@ Bump this when you cut a new build. It's read by:
   - the zip-filename one-liner in the README
 """
 
-__version__ = "0.7.5"
+__version__ = "0.7.6"
