@@ -1,11 +1,10 @@
 [project]
 name = "excel-parsing"
 version = "0.1.0"
-description = "Convert each row of a product CSV into a Cerve product-spec JSON via Claude."
+description = "Turn supplier price/promotion files into Cerve product specs and link them to unmatched SKUs."
 readme = "README.md"
 requires-python = ">=3.10"
 dependencies = [
-    "anthropic>=0.40.0",
     "google-genai>=0.3.0",
     "openpyxl>=3.1.0",
     "xlrd==2.0.2",
@@ -19,9 +18,11 @@ dependencies = [
 build = [
     "pyinstaller>=6.0",
 ]
-
-[project.scripts]
-csv-to-specs = "csv_to_specs:main"
+# Only the legacy Claude-based runners (csv_to_specs.py) need this; app.spec
+# excludes anthropic from the bundle. Install with: uv sync --group legacy
+legacy = [
+    "anthropic>=0.40.0",
+]
 
 [tool.uv]
 package = false
